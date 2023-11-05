@@ -1,4 +1,4 @@
-# STEP 1 : Locate the path of manage.py
+# STEP 1 : Locate the path of manage.py in your Terminal
 
 # STEP 2 : Perform: python manage.py createsuperuser
 		
