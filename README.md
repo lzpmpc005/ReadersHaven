@@ -1,10 +1,10 @@
-# STEP 1 : Locate the path of manage.py in your Terminal
+# STEP 1 : Locate the path of manage.py
 
-# STEP 2 : Perform: python manage.py createsuperuser
+# STEP 2 : Excute this line of code: python manage.py createsuperuser
 		
 then create your user name, email and password
 
-# STEP 3 : Perform: python manage.py runserver
+# STEP 3 : Excute this line of code: python manage.py runserver
 
 # STEP 4 : Open your browser and go to : http://localhost:8000/admin/
 	        
