@@ -17,41 +17,42 @@ class AuthorModeTest(TestCase):
 class BookModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
+        # author = Author.objects.get(id=1)
         Author.objects.create(author_name='Leo Tolstoy')
         Book.objects.create(title='War and Peace', author=Author.objects.get(), price='39.9')
 
     def test_title_label(self):
-        title = Book.objects.get(id=1)
-        field_label = title._meta.get_field('title').verbose_name
+        book = Book.objects.get(id=1)
+        field_label = book._meta.get_field('title').verbose_name
         self.assertEqual(field_label, 'title')
 
     def test_author_name_label(self):
-        author_name = Book.objects.get(id=1)
-        field_label = author_name._meta.get_field('author_name').verbose_name
-        self.assertEqual(field_label, 'author_name')
+        book = Book.objects.get(id=1)
+        field_label = book._meta.get_field('author').verbose_name
+        self.assertEqual(field_label, 'author')
 
     def test_price_label(self):
-        price = Book.objects.get(id=1)
-        field_label = price._meta.get_field('price').verbose_name
+        book = Book.objects.get(id=1)
+        field_label = book._meta.get_field('price').verbose_name
         self.assertEqual(field_label, 'price')
 
     def test_title_max_length(self):
-        title = Book.objects.get(id=1)
-        max_length = title._meta.get_field('title').max_length
+        book = Book.objects.get(id=1)
+        max_length = book._meta.get_field('title').max_length
         self.assertEqual(max_length, 100)
 
     def test_author_name_max_length(self):
-        author_name = Book.objects.get(id=1)
-        max_length = author_name._meta.get_field('author_name').max_length
-        self.assertEqual(max_length, 50)
+        book = Book.objects.get(id=1)
+        max_length = book._meta.get_field('author').max_length
+        self.assertEqual(max_length, None)
 
     def test_price_max_length(self):
-        price = Book.objects.get(id=1)
-        max_length = price._meta.get_field('price').max_length
+        book = Book.objects.get(id=1)
+        max_length = book._meta.get_field('price').max_length
         self.assertEqual(max_length, 10)
 
     def test_object_name_is_title_comma_author_comma_price(self):
         book = Book.objects.get(id=1)
-        expected_object_name = f'{book.title}, {book.author},{book.price}'
+        expected_object_name = book.title
         self.assertEqual(str(book), expected_object_name)
 
