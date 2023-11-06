@@ -6,7 +6,7 @@ then create your user name, email and password
 # STEP 3 : Perform: python manage.py runserver
 
 # STEP 4 : Open your browser and go to : http://localhost:8000/admin/
-Enter the user name and password which you created in STEP2
+enter the user name and password which you created in STEP2
 	
 # STEP 5 : Add books: go to http://localhost:8000/admin/books/book/add/
 or click "+Add" button
