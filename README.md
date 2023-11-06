@@ -8,11 +8,12 @@ then create your user name, email and password
 
 # STEP 4 : Open your browser and go to : http://localhost:8000/admin/
 	        
-then enter the user name and password which you created in STEP2
-
-Now you've entered the admin page, you can add books or filter books by author in this page :
+Enter the user name and password which you created in STEP2
 	
-1. to add books: click "+Add" button or go to http://localhost:8000/admin/books/book/add/
-2. to filter books by author: choose the author from the filter "By author" on the right of the page
+# STEP 5 : Add books: click "+Add" button or go to
+http://localhost:8000/admin/books/book/add/
 
-# STEP 5 : If you want to retrieve the full list of books, just go to : http://localhost:8000/books/
+# STEP 6 : Filter books by author: go to http://localhost:8000/admin/books/book/
+choose the author from the filter "By author" on the right of the page
+
+# STEP 7 : Retrieve the full list of books, go to http://localhost:8000/books/
