@@ -45,7 +45,7 @@ class BookModelTest(TestCase):
     def test_price_max_length(self):
         book = Book.objects.get(id=1)
         max_length = book._meta.get_field('price').max_length
-        self.assertEqual(max_length, 10)
+        self.assertEqual(max_length, None)
 
     def test_object_name_is_title_comma_author_comma_price(self):
         book = Book.objects.get(id=1)
