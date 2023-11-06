@@ -9,7 +9,7 @@ class Author(models.Model):
 class Book(models.Model):
     title = models.CharField(max_length=100)
     author = models.ForeignKey(Author, on_delete=models.SET_NULL, null=True)
-    price = models.CharField(max_length=10)
+    price = models.DecimalField(max_digits=5, decimal_places=2)
 
     def __str__(self) -> str:
         return self.title

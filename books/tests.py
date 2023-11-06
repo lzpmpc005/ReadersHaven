@@ -1,8 +1,6 @@
 from django.test import TestCase
 from .models import Author, Book
 
-
-# Create your tests here.
 class AuthorModeTest(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -13,11 +11,9 @@ class AuthorModeTest(TestCase):
         field_label = author._meta.get_field("author_name").verbose_name
         self.assertEqual(field_label, "author name")
 
-
 class BookModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
-        # author = Author.objects.get(id=1)
         Author.objects.create(author_name='Leo Tolstoy')
         Book.objects.create(title='War and Peace', author=Author.objects.get(), price='39.9')
 
