@@ -15,3 +15,10 @@ class Book_list(generics.ListCreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
 
+class BookFilterByAuthor(generics.ListAPIView):
+    serializer_class = BookSerializer
+    
+    def get_queryset(self):
+        author_id = self.kwargs["author_id"]
+        return Book.objects.filter(author__id = author_id)
+
