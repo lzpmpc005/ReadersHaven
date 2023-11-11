@@ -13,6 +13,8 @@ def book_list(request):
                    'author': book.author.author_name,
                    'price': str(book.price) + "$"
                    } for book in books]
+    if book_array == []:
+        return JsonResponse({'error': "Title was not found"}, status = 400)
     return JsonResponse(book_array, safe = False)
 
 @csrf_exempt
@@ -76,8 +78,8 @@ def create_book(request):
                 return JsonResponse({'error': "Author_id should be integer!"}, status = 400)
             if author_id < 0:
                 return JsonResponse({'error': "Incorrect author_id"}, status = 400)
-            if not isinstance(price, int):
-                return JsonResponse({'error': "Price should be integer!"}, status = 400)
+            if not isinstance(price, (int, float)):
+                return JsonResponse({'error': "Price should be integer or float!"}, status = 400)
             if price < 0:
                 return JsonResponse({'error': "Incorrect price"}, status = 400)
             exist_author = Author.objects.filter(id = author_id).first()
@@ -119,16 +121,29 @@ def filter_books_by_author_name(request, author_name):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
 
-def search_books_by_title(request, search_title):
-    books = Book.objects.all()
-    book_search_result = []
-    for book in books:
-        if search_title.upper() in book.title.upper():
-            book_search_result.append({'id': book.id,
-                                   'title': book.title,
-                                   'author': book.author.author_name,
-                                   'price': str(book.price) + "$"
-                                   })
-    if book_search_result == []:
-        return JsonResponse({'error': "Title was not found"}, status = 400)
-    return JsonResponse(book_search_result, safe=False)
+def sort_books_by_title(request):
+    books = Book.objects.all().order_by('title')
+    book_sorted = [{'id': book.id,
+                   'title': book.title,
+                   'author': book.author.author_name,
+                   'price': str(book.price) + "$"
+                   } for book in books]
+    return JsonResponse(book_sorted, safe=False)
+
+def sort_books_by_price_ascending(request):
+    books = Book.objects.all().order_by('price','title')
+    book_sorted = [{'id': book.id,
+                   'title': book.title,
+                   'author': book.author.author_name,
+                   'price': str(book.price) + "$"
+                   } for book in books]
+    return JsonResponse(book_sorted, safe=False)
+
+def sort_books_by_price_descending(request):
+    books = Book.objects.all().order_by('-price','title')
+    book_sorted = [{'id': book.id,
+                   'title': book.title,
+                   'author': book.author.author_name,
+                   'price': str(book.price) + "$"
+                   } for book in books]
+    return JsonResponse(book_sorted, safe=False)
