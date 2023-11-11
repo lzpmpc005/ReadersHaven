@@ -1,12 +1,7 @@
-from django.views import generic
 from .models import Book, Author
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
-
-class BookListView(generic.ListView):
-    model = Book
-    context_object_name = 'book_list'
 
 def book_list(request):
     title = request.GET.get('title')
@@ -32,7 +27,12 @@ def create_author(request):
             
             if not isinstance(author_name, str):
                 return JsonResponse({'error': "Name should be string!"}, status = 400)
-            
+
+            sc = "[@_!#$%^&*()<>?/\|}{~:;']1234567890"
+            for i in author_name:
+                if i in sc:
+                    return JsonResponse({'error': "Name contains number or special character"}, status=400)
+
             exist_author = Author.objects.filter(author_name = author_name).first()
             if exist_author:
                 return JsonResponse({'error': "Author is already exist!"}, status = 400)
@@ -50,13 +50,28 @@ def create_book(request):
             title = json_request.get("title")
             author_id = json_request.get("author_id")
             price = json_request.get("price")
+            author_name = json_request.get("author")
 
             if not title or not author_id or not price:
-                return JsonResponse({'error': "title/author_id/price are required!"}, status = 400)
+                if not title or not author_name or not price:
+                    return JsonResponse({'error': "title/author_id/price are required!"}, status = 400)
             if not isinstance(title, str):
                 return JsonResponse({'error': "Title should be string"}, status = 400)
             if title == "":
                 return JsonResponse({'error': "Book title is empty"}, status = 400)
+
+            sc = "[@_!#$%^&*()<>?/\|}{~:;']"
+            for i in title:
+                if i in sc:
+                    return JsonResponse({'error': "Title contains special character"}, status=400)
+            if author_name:
+                exist_author = Author.objects.filter(author_name=author_name).first()
+                if not exist_author:
+                    author = Author.objects.create(author_name=author_name)
+                else:
+                    author = exist_author
+                author_id = author.id
+
             if not isinstance(author_id, int):
                 return JsonResponse({'error': "Author_id should be integer!"}, status = 400)
             if author_id < 0:
@@ -88,3 +103,18 @@ def filter_books_by_author(request, author_id):
         return JsonResponse(book_array, safe = False)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status = 400)
+
+def filter_books_by_author_name(request, author_name):
+    try:
+        author = Author.objects.filter(author_name=author_name).first()
+        if not author:
+            return JsonResponse({'error': "Author was not found"}, status=400)
+        books = Book.objects.filter(author=author)
+        book_array = [{'id': book.id,
+                       'title': book.title,
+                       'author': book.author.author_name,
+                       'price': str(book.price) + "$"
+                       } for book in books]
+        return JsonResponse(book_array, safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
