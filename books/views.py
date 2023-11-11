@@ -118,3 +118,17 @@ def filter_books_by_author_name(request, author_name):
         return JsonResponse(book_array, safe=False)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
+
+def search_books_by_title(request, search_title):
+    books = Book.objects.all()
+    book_search_result = []
+    for book in books:
+        if search_title.upper() in book.title.upper():
+            book_search_result.append({'id': book.id,
+                                   'title': book.title,
+                                   'author': book.author.author_name,
+                                   'price': str(book.price) + "$"
+                                   })
+    if book_search_result == []:
+        return JsonResponse({'error': "Title was not found"}, status = 400)
+    return JsonResponse(book_search_result, safe=False)
