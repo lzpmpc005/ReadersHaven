@@ -25,19 +25,19 @@ def create_author(request):
             author_name = data.get("name")
 
             if not author_name or author_name == "":
-                return JsonResponse({'error': "Name not specified"}, status=400)
+                return JsonResponse({'error': "Name not specified"}, status = 400)
 
             if not isinstance(author_name, str):
-                return JsonResponse({'error': "Name should be string!"}, status=400)
+                return JsonResponse({'error': "Name should be string!"}, status = 400)
 
             sc_number = "[@_!#$%^&*()<>?/\|}{~:;']1234567890"
             for i in author_name:
                 if i in sc_number:
-                    return JsonResponse({'error': "Name contains number or special character"}, status=400)
+                    return JsonResponse({'error': "Name contains number or special character"}, status = 400)
 
             exist_author = Author.objects.filter(author_name=author_name).first()
             if exist_author:
-                return JsonResponse({'error': "Author is already exist!"}, status=400)
+                return JsonResponse({'error': "Author is already exist!"}, status = 400)
              
             author = Author.objects.create(author_name = author_name)
             return JsonResponse({'author_id': author.id})
@@ -65,12 +65,12 @@ def create_book(request):
             sc = "[@_!#$%^&*()<>?/\|}{~:;']"
             for i in title:
                 if i in sc:
-                    return JsonResponse({'error': "Title contains special character"}, status=400)
+                    return JsonResponse({'error': "Title contains special character"}, status = 400)
             if author_name:
                 sc_number = "[@_!#$%^&*()<>?/\|}{~:;']1234567890"
                 for i in author_name:
                     if i in sc_number:
-                        return JsonResponse({'error': "Name contains number or special character"}, status=400)
+                        return JsonResponse({'error': "Name contains number or special character"}, status = 400)
                 exist_author = Author.objects.filter(author_name=author_name).first()
                 if not exist_author:
                     author = Author.objects.create(author_name=author_name)
@@ -114,7 +114,7 @@ def filter_books_by_author_name(request, author_name):
     try:
         author = Author.objects.filter(author_name=author_name).first()
         if not author:
-            return JsonResponse({'error': "Author was not found"}, status=400)
+            return JsonResponse({'error': "Author was not found"}, status = 400)
         books = Book.objects.filter(author=author)
         book_array = [{'id': book.id,
                        'title': book.title,
@@ -123,7 +123,7 @@ def filter_books_by_author_name(request, author_name):
                        } for book in books]
         return JsonResponse(book_array, safe=False)
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=400)
+        return JsonResponse({'error': str(e)}, status = 400)
 
 def sort_books_by_title(request):
     books = Book.objects.all().order_by('title')
