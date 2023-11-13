@@ -1,17 +1,18 @@
-# STEP 1 : Locate ReadersHaven/manage.py in you Terminal
+## Start Local server by
+'''python manage.py runserver'''
 
-# STEP 2 : Perform: python manage.py createsuperuser	
-then create your user name, email and password
+# Test with Postman
+ 
+## Add books: Post http://localhost:8000/books/create_book
 
-# STEP 3 : Perform: python manage.py runserver
+## Filter by author id or name: Get http://localhost:8000/books/booklist/filter/id or name
 
-# STEP 4 : Go to : http://localhost:8000/admin/
-enter the user name and password which you created in STEP2
-	
-# STEP 5 : Add books: go to http://localhost:8000/admin/books/book/add/
-or click "+Add" button
+## Retrieve booklist: Get http://localhost:8000/books/booklist
 
-# STEP 6 : Filter books by author: go to http://localhost:8000/admin/books/book/
-choose the author from the filter "By author" on the right of the page
+## Search by title: Get http://localhost:8000/books/booklist?title=
 
-# STEP 7 : Retrieve the list of books, go to http://localhost:8000/books/
+## Sort by title: Get http://localhost:8000/books/booklist/atitle
+
+## Sort by price descending: Get http://localhost:8000/books/booklist/deprice
+
+## Sort by price ascending: Get http://localhost:8000/books/booklist/aprice
