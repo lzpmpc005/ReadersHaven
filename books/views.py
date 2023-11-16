@@ -2,12 +2,26 @@ from .models import Book, Author
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+import re
 
 def book_list(request):
     title = request.GET.get('title')
+    order_by = request.GET.get('order_by')
     books = Book.objects.all()
     if title:
         books = books.filter(title__icontains = title)
+    if order_by:
+        if order_by not in ['price_asc', 'price_desc', 'title_asc', 'title_desc']:
+            return JsonResponse({'error': "Incorrect order_by expression"}, status = 400)
+        if order_by == 'price_asc':
+            books = books.order_by('price')
+        if order_by == 'price_desc':
+            books = books.order_by('-price')
+        if order_by == 'title_asc':
+            books = books.order_by('title')
+        if order_by == 'title_desc':
+            books = books.order_by('-title')
+
     book_array = [{'id': book.id,
                    'title': book.title,
                    'author': book.author.author_name,
@@ -29,11 +43,10 @@ def create_author(request):
 
             if not isinstance(author_name, str):
                 return JsonResponse({'error': "Name should be string!"}, status = 400)
-
-            sc_number = "[@_!#$%^&*()<>?/\|}{~:;']1234567890"
-            for i in author_name:
-                if i in sc_number:
-                    return JsonResponse({'error': "Name contains number or special character"}, status = 400)
+            
+            sc_number = r'[^\w\s]|\d'
+            if re.search(sc_number, author_name):
+                return JsonResponse({'error': "Name contains number or special character"}, status = 400)
 
             exist_author = Author.objects.filter(author_name=author_name).first()
             if exist_author:
@@ -52,32 +65,14 @@ def create_book(request):
             title = json_request.get("title")
             author_id = json_request.get("author_id")
             price = json_request.get("price")
-            author_name = json_request.get("author")
 
             if not title or not author_id or not price:
-                if not title or not author_name or not price:
-                    return JsonResponse({'error': "title/author_id/price are required!"}, status = 400)
+                return JsonResponse({'error': "title/author_id/price are required!"}, status = 400)
             if not isinstance(title, str):
                 return JsonResponse({'error': "Title should be string"}, status = 400)
             if title == "":
                 return JsonResponse({'error': "Book title is empty"}, status = 400)
-
-            sc = "[@_!#$%^&*()<>?/\|}{~:;']"
-            for i in title:
-                if i in sc:
-                    return JsonResponse({'error': "Title contains special character"}, status = 400)
-            if author_name:
-                sc_number = "[@_!#$%^&*()<>?/\|}{~:;']1234567890"
-                for i in author_name:
-                    if i in sc_number:
-                        return JsonResponse({'error': "Name contains number or special character"}, status = 400)
-                exist_author = Author.objects.filter(author_name=author_name).first()
-                if not exist_author:
-                    author = Author.objects.create(author_name=author_name)
-                else:
-                    author = exist_author
-                author_id = author.id
-
+            
             if not isinstance(author_id, int):
                 return JsonResponse({'error': "Author_id should be integer!"}, status = 400)
             if author_id < 0:
@@ -112,42 +107,45 @@ def filter_books_by_author(request, author_id):
 
 def filter_books_by_author_name(request, author_name):
     try:
-        author = Author.objects.filter(author_name=author_name).first()
+        author = Author.objects.filter(author_name = author_name).first()
         if not author:
             return JsonResponse({'error': "Author was not found"}, status = 400)
-        books = Book.objects.filter(author=author)
+        books = Book.objects.filter(author = author)
         book_array = [{'id': book.id,
                        'title': book.title,
                        'author': book.author.author_name,
                        'price': str(book.price) + "$"
                        } for book in books]
-        return JsonResponse(book_array, safe=False)
+        return JsonResponse(book_array, safe = False)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status = 400)
 
-def sort_books_by_title(request):
-    books = Book.objects.all().order_by('title')
-    book_sorted = [{'id': book.id,
-                   'title': book.title,
-                   'author': book.author.author_name,
-                   'price': str(book.price) + "$"
-                   } for book in books]
-    return JsonResponse(book_sorted, safe=False)
+@csrf_exempt    
+def delete_book_by_id(request, book_id):
+    try:
+        book = Book.objects.get(id = book_id)
+        if request.method == "DELETE":
+            book.delete()
+            return JsonResponse({'message': "Book was successfully removed!"})
+    except Book.DoesNotExist:
+        return JsonResponse({'error': "Book was not found!"}, status = 404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status = 400)
 
-def sort_books_by_price_ascending(request):
-    books = Book.objects.all().order_by('price','title')
-    book_sorted = [{'id': book.id,
-                   'title': book.title,
-                   'author': book.author.author_name,
-                   'price': str(book.price) + "$"
-                   } for book in books]
-    return JsonResponse(book_sorted, safe=False)
+@csrf_exempt    
+def delete_book_by_title(request):
+    try:
+        if request.method == "DELETE":
+            json_request = json.loads(request.body)
+            title = json_request.get("title")
+            if not title:
+                return JsonResponse({'error': "Title is required field!"}, status = 400)
+            book = Book.objects.get(title = title)
+            book.delete()
+            return JsonResponse({'message': "Book was successfully removed!"})
+    except Book.DoesNotExist:
+        return JsonResponse({'error': "Book was not found!"}, status = 404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status = 400)
 
-def sort_books_by_price_descending(request):
-    books = Book.objects.all().order_by('-price','title')
-    book_sorted = [{'id': book.id,
-                   'title': book.title,
-                   'author': book.author.author_name,
-                   'price': str(book.price) + "$"
-                   } for book in books]
-    return JsonResponse(book_sorted, safe=False)
+
