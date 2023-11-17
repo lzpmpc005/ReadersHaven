@@ -163,8 +163,7 @@ def update_book(request):
                 return JsonResponse({'error': "Price should be integer or float!"}, status = 400)
             if newprice < 0:
                 return JsonResponse({'error': "Incorrect price"}, status = 400)
-            exist_book = Book.objects.filter(id = book_id)
-            exist_book.update(price = newprice)
+            Book.objects.filter(id = book_id).update(price = newprice)
             return JsonResponse({'message': "Price successfully updated!"})
         except Book.DoesNotExist:
             return JsonResponse({'error': "Book was not found!"}, status=404)
