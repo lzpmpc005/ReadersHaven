@@ -148,4 +148,25 @@ def delete_book_by_title(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status = 400)
 
-
+@csrf_exempt
+def update_book(request):
+    if request.method == 'POST':
+        try:
+            json_request = json.loads(request.body)
+            book_id = json_request.get("book_id")
+            newprice = json_request.get("price")
+            if not book_id or not newprice:
+                return JsonResponse({'error': "book_id/price are required!"}, status = 400)
+            if not isinstance(book_id, int):
+                return JsonResponse({'error': "Book_id should be integer!"}, status = 400)
+            if not isinstance(newprice, (int, float)):
+                return JsonResponse({'error': "Price should be integer or float!"}, status = 400)
+            if newprice < 0:
+                return JsonResponse({'error': "Incorrect price"}, status = 400)
+            Book.objects.get(id=book_id)
+            Book.objects.filter(id = book_id).update(price = newprice)
+            return JsonResponse({'message': "Price successfully updated!"})
+        except Book.DoesNotExist:
+            return JsonResponse({'error': "Book was not found!"}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status = 400)
