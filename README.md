@@ -8,24 +8,24 @@ This application is built with Django. However, instead of using libraries built
 
 In the future, we expect to implement features like update or delete books in bulk to improve its efficiency.
 
-## 2 How to Install and Run ReadersHaven
+## 2 Install and Run ReadersHaven
 
-###Set up your environment
-####Make sure you are using Windows
-Unfortunately, ReadersHaven doesn't support MacOS right now.
-####Install Python3
-you can download and install Python3 ['here'](https://www.python.org/downloads/) (latest version recommended).
+>Set up your environment
+>>Make sure you are using Windows
+>>>Unfortunately, ReadersHaven doesn't support MacOS right now.
+>>Install Python3
+>>>you can download and install Python3 ['here'](https://www.python.org/downloads/) (latest version recommended).
 
-###Activate local server
-####open terminal and perform:
+>Activate local server
+>>open terminal and perform:
 
 ``` nix
 cd path  # path = the path of 'manage.py'
 python manage.py runserver
 ```
 
-###Manage bookstore with browsers
-####open your browser and enjoy ReadersHaven
+>Manage bookstore with browsers
+>>open your browser and enjoy ReadersHaven
 
 ## 3 Features
 
