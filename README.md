@@ -1,4 +1,4 @@
-# ReadersHaven: a bookstore management web application
+# ReadersHaven: bookstore management application
 
 ## 1 Introduction
 
@@ -10,33 +10,22 @@ In the future, we expect to implement features like update or delete books in bu
 
 ## 2 How to Install and Run ReadersHaven
 
-<details>
-<summary><b>1. Set up your environment</b></summary>
-
-#### Make sure you are using Windows
+* Set up your environment
+  * Make sure you are using Windows
 Unfortunately, ReadersHaven doesn't support MacOS right now.
-
-#### Install Python3
+  * Install Python3
 you can download and install Python3 ['here'](https://www.python.org/downloads/) (latest version recommended).
-</details>
 
-</details>
-<summary><b>2. Activate local server</b></summary>
-
-#### open terminal and perform:
+* Activate local server</b></summary>
+  * open terminal and perform:
 
 ``` nix
 cd path  # path = the path of 'manage.py'
 python manage.py runserver
 ```
-</details>
 
-</details>
-<summary><b>3. Manage bookstore with browsers</b></summary>
-
-#### open your browser and enjoy ReadersHaven
-
-</details>
+* Manage bookstore with browsers
+  * open your browser and enjoy ReadersHaven
 
 ## 3 Features
 
