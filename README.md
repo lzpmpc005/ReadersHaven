@@ -10,22 +10,25 @@ In the future, we expect to implement features like update or delete books in bu
 
 ## 2 Install and Run ReadersHaven
 
->Set up your environment
->>Make sure you are using Windows
->>>Unfortunately, ReadersHaven doesn't support MacOS right now.
->>Install Python3
->>>you can download and install Python3 ['here'](https://www.python.org/downloads/) (latest version recommended).
+####Set up your environment
 
->Activate local server
->>open terminal and perform:
+* Make sure you are using Windows
+  * Unfortunately, ReadersHaven doesn't support MacOS right now.
+* Install Python3
+  * you can download and install Python3 ['here'](https://www.python.org/downloads/) (latest version recommended).
+
+####Activate local server
+
+* open terminal and perform:
 
 ``` nix
 cd path  # path = the path of 'manage.py'
 python manage.py runserver
 ```
 
->Manage bookstore with browsers
->>open your browser and enjoy ReadersHaven
+####Manage bookstore with browsers
+
+* open your browser and enjoy ReadersHaven
 
 ## 3 Features
 
