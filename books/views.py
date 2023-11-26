@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 import re
 import pandas as pd
+from django.core.paginator import Paginator
 
 def book_list(request):
     title = request.GET.get('title')
@@ -22,12 +23,16 @@ def book_list(request):
             books = books.order_by('title')
         if order_by == 'title_desc':
             books = books.order_by('-title')
-
+    # retrieve 'num_per_page' books on each page
+    num_per_page = request.GET.get('num_per_page')
+    paginator = Paginator(books, num_per_page)
+    page_number = request.GET.get('page')
+    page_books = paginator.get_page(page_number)
     book_array = [{'id': book.id,
                    'title': book.title,
                    'author': book.author.author_name,
                    'price': str(book.price) + "$"
-                   } for book in books]
+                   } for book in page_books]
     if book_array == []:
         return JsonResponse({'error': "Title was not found"}, status = 400)
     return JsonResponse(book_array, safe = False)
