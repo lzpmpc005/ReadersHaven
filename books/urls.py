@@ -6,7 +6,8 @@ from .views import (book_list,
                     filter_books_by_author_name, 
                     delete_book_by_id,
                     delete_book_by_title,
-                    update_book)
+                    update_book,
+                    bulk_create_book)
 
 urlpatterns = [
     path('booklist/', book_list, name = 'BookList'),
@@ -16,7 +17,8 @@ urlpatterns = [
     path('booklist/filter/<str:author_name>/', filter_books_by_author_name, name = 'Filter_By_Author_name'),
     path('delete/<int:book_id>/', delete_book_by_id , name = 'Delete_By_Id'),
     path('delete/', delete_book_by_title , name = 'Delete_By_Title'),
-    path('update/', update_book , name = 'Update book price')
+    path('update/', update_book , name = 'Update book price'),
+    path('bulk_add', bulk_create_book, name = 'bulk_add'),
          
          
 ]

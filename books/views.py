@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 import re
+import pandas as pd
 
 def book_list(request):
     title = request.GET.get('title')
@@ -170,3 +171,23 @@ def update_book(request):
             return JsonResponse({'error': "Book was not found!"}, status=404)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status = 400)
+
+
+@csrf_exempt
+def bulk_create_book(request):
+    if request.method == 'POST':
+        try:
+            json_request = json.loads(request.body)
+            chunk_size = json_request.get('chunk_size')
+            csv_file = json_request.get('csv_file')
+            for chunk in pd.read_csv(csv_file, chunksize=chunk_size):
+                authors = [Author(author_name=author) for author in set(chunk['author'])]
+                Author.objects.bulk_create(authors)
+                books = []
+                for index, row in chunk.iterrows():
+                    author = Author.objects.filter(author_name=row['author']).first()
+                    books.append(Book(title=row['title'], author=author, price=row['price']))
+                Book.objects.bulk_create(books)
+            return JsonResponse({'Books': "Added successfully!"})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
