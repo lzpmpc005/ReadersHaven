@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 import re
 import pandas as pd
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def book_list(request):
     title = request.GET.get('title')
@@ -24,10 +24,15 @@ def book_list(request):
         if order_by == 'title_desc':
             books = books.order_by('-title')
     # retrieve 'num_per_page' books on each page
-    num_per_page = request.GET.get('num_per_page')
-    paginator = Paginator(books, num_per_page)
+    paginator = Paginator(books, 10)
     page_number = request.GET.get('page')
-    page_books = paginator.get_page(page_number)
+    try:
+        page_books = paginator.page(page_number)
+    except PageNotAnInteger:
+        page_books = paginator.page(1)
+    except EmptyPage:
+        page_books = paginator.page(paginator.num_pages)
+    
     book_array = [{'id': book.id,
                    'title': book.title,
                    'author': book.author.author_name,
@@ -183,16 +188,27 @@ def bulk_create_book(request):
     if request.method == 'POST':
         try:
             json_request = json.loads(request.body)
-            chunk_size = json_request.get('chunk_size')
-            csv_file = json_request.get('csv_file')
-            for chunk in pd.read_csv(csv_file, chunksize=chunk_size):
-                authors = [Author(author_name=author) for author in set(chunk['author'])]
-                Author.objects.bulk_create(authors)
-                books = []
-                for index, row in chunk.iterrows():
-                    author = Author.objects.filter(author_name=row['author']).first()
-                    books.append(Book(title=row['title'], author=author, price=row['price']))
-                Book.objects.bulk_create(books)
-            return JsonResponse({'Books': "Added successfully!"})
+            books_data = json_request.get('books')
+            if not books_data:
+                return JsonResponse({'error': "Books data is required field!"}, status = 400)
+            books_to_create = [
+                Book(title = book.get('title'), price = book.get('price'), author_id = book.get('author_id'))
+                for book in books_data
+            ]
+            Book.objects.bulk_create(books_to_create)
+            return JsonResponse({'message': "Books were sucessfully added!"})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+@csrf_exempt
+def bulk_delete_books(request):
+    if request.method == 'DELETE':
+        try:
+            json_request = json.loads(request.body)
+            book_ids = json_request.get('book_ids')
+            if not book_ids:
+                return JsonResponse({'error': "Book identificators are required fields!"}, status = 400)
+            Book.objects.filter(id__in = book_ids).delete()
+            return JsonResponse({'message': "Books were successfully removed!"})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)

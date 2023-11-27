@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import (book_list, 
+from .views import (book_list, bulk_delete_books, 
                     create_author, 
                     create_book, 
                     filter_books_by_author,
@@ -19,6 +19,7 @@ urlpatterns = [
     path('delete/', delete_book_by_title , name = 'Delete_By_Title'),
     path('update/', update_book , name = 'Update book price'),
     path('bulk_add', bulk_create_book, name = 'bulk_add'),
+    path('bulk_delete', bulk_delete_books, name = 'bulk_delete')
          
          
 ]
