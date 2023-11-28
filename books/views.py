@@ -24,7 +24,8 @@ def book_list(request):
         if order_by == 'title_desc':
             books = books.order_by('-title')
     # retrieve 'num_per_page' books on each page
-    paginator = Paginator(books, 10)
+    num_per_page = request.GET.get('num_per_page')
+    paginator = Paginator(books, num_per_page)
     page_number = request.GET.get('page')
     try:
         page_books = paginator.page(page_number)
@@ -188,17 +189,20 @@ def bulk_create_book(request):
     if request.method == 'POST':
         try:
             json_request = json.loads(request.body)
-            books_data = json_request.get('books')
-            if not books_data:
-                return JsonResponse({'error': "Books data is required field!"}, status = 400)
-            books_to_create = [
-                Book(title = book.get('title'), price = book.get('price'), author_id = book.get('author_id'))
-                for book in books_data
-            ]
-            Book.objects.bulk_create(books_to_create)
-            return JsonResponse({'message': "Books were sucessfully added!"})
+            chunk_size = json_request.get('chunk_size')
+            csv_file = json_request.get('csv_file')
+            for chunk in pd.read_csv(csv_file, chunksize=chunk_size):
+                authors = [Author(author_name=author) for author in set(chunk['author'])]
+                Author.objects.bulk_create(authors)
+                books = []
+                for index, row in chunk.iterrows():
+                    author = Author.objects.filter(author_name=row['author']).first()
+                    books.append(Book(title=row['title'], author=author, price=row['price']))
+                Book.objects.bulk_create(books)
+            return JsonResponse({'Books': "Added successfully!"})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
+
 
 @csrf_exempt
 def bulk_delete_books(request):
