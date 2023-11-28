@@ -1,11 +1,9 @@
 import requests
 
 url = "http://localhost:8000/books/bulk_delete"
-book_ids = []
-for i in range(10, 25000):
-    book_ids.append(i)
+
 data = {
-    "book_ids": book_ids,
+    "book_ids": [11, 12, 13, 14, 15, 16, 17, 18, 19],
 }
 response = requests.delete(url, json=data)
 print(response.json())
